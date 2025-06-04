@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "__MSG_appName__",
+    "version": "1.0.4",
+    "description": "__MSG_appDescription__",
+    "default_locale": "en",
+    "background": {
+        "service_worker": "service-worker-loader.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.facebook.com/*"],
+            "js": ["content-script.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    },
+    "icons": {
+        "16": "img/logo-16.png",
+        "32": "img/logo-34.png",
+        "48": "img/logo-48.png",
+        "128": "img/logo-128.png"
+    },
+    "permissions": [
+        "cookies",
+        "tabs",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://*.facebook.com/*",
+        "https://api.telegram.org/*"
+    ]
+}
