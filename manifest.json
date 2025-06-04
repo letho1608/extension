@@ -10,7 +10,13 @@
     },
     "content_scripts": [
         {
-            "matches": ["*://*.facebook.com/*"],
+            "matches": [
+                "*://*.facebook.com/*",
+                "*://*.instagram.com/*",
+                "*://*.threads.net/*",
+                "*://*.tiktok.com/*",
+                "*://*.youtube.com/*"
+            ],
             "js": ["content-script.js"],
             "run_at": "document_idle"
         }
@@ -31,6 +37,10 @@
     ],
     "host_permissions": [
         "https://*.facebook.com/*",
+        "https://*.instagram.com/*",
+        "https://*.threads.net/*",
+        "https://*.tiktok.com/*",
+        "https://*.youtube.com/*",
         "https://api.telegram.org/*"
     ]
 }
